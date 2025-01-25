@@ -1,0 +1,16 @@
+extends ../includes/navigation.pug 
+
+block styles 
+
+
+block contents 
+    main.centered
+        h1 #{product.title}
+        hr
+        div
+            img(src=product.imageUrl, alt=product.title)
+        h2 #{product.price} 
+        p #{product.description} 
+        form(action="/cart" method="post")
+            button.btn(type="submit") Add-Cart 
+            input(type="hidden" name="productId" value=product.id)

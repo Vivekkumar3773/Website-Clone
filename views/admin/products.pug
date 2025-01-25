@@ -1,0 +1,24 @@
+extends ../includes/navigation.pug 
+
+block styles
+    link(rel="stylesheet" href="/css/product.css") 
+
+block contents 
+    if prods.length > 0
+        .grid 
+            each products in prods 
+                article.card.product-item
+                    header.card__header 
+                        h1.product__title #{products.title}   
+                    .card__image
+                        img(src=products.imageUrl alt=products.title)
+                    .card__content 
+                        h2.product__price ₹#{products.price} 
+                        p.product__description #{products.description} 
+                    .card__actions
+                        a.btn(href=`/edit-product/${products.id}?edit=true`) Edit 
+                        form(action="/delete-product" method="post")
+                            input(type="hidden" value=products.id name="productId")
+                            button.btn(type="submit") Delete  
+    else 
+        h1 No Products In Cart..

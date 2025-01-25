@@ -1,0 +1,22 @@
+extends ../includes/navigation.pug
+
+block styles
+    link(rel="stylesheet" href="/css/product.css")
+    link(rel="stylesheet" href="/css/form.css")
+
+block contents
+    form.product-form(action=editing ? '/edit-product' : '/add-product' method="post")
+        .form-control
+            label(for="title") Title
+            input#title(type="text" name="title" value=product && editing ? product.title : '')
+        .form-control
+            label(for="imageUrl") ImageURL
+            input#imageUrl(type="text" name="imageUrl" value=product && editing ? product.imageUrl : '')
+        .form-control
+            label(for="price") Price
+            input#price(type="number" steps="0.01" name="price" value=product && editing ? product.price : '')
+        .form-control
+            label(for="description") Description
+            textarea#description(name="description" rows="5")= product && editing ? product.description : '' 
+        input(type="hidden" value=product.id name="productId")
+        button.btn(type="submit")= editing ? "Update Product" : "Add Product"
