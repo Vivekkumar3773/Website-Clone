@@ -3,20 +3,20 @@ const bodyParser = require('body-parser');
 
 const adminController = require('../controllers/admin');
 
-const addProduct = express.Router();
+const router = express.Router();
 
-addProduct.use(bodyParser.urlencoded({ extended: false }));
+router.use(bodyParser.urlencoded({ extended: false }));
 
-addProduct.get('/add-product', adminController.getAddProduct);
+// Routes for adding, editing, and deleting products
+router.get('/add-product', adminController.getAddProduct);
 
-addProduct.post('/add-product', adminController.postAddProduct);
+router.post('/add-product', adminController.postAddProduct);
 
-addProduct.get('/products', adminController.getProducts);
+router.get('/products', adminController.getProducts);
 
-addProduct.get('/edit-product/:productId', adminController.getEditProduct);
+router.get('/edit-product/:productId', adminController.getEditProduct);
+router.post('/edit-product', adminController.postEditProduct);
 
-addProduct.post('/edit-product', adminController.postEditProduct);
+router.post('/delete-product', adminController.postDeleteProduct);
 
-addProduct.post('/delete-product', adminController.postDeleteProduct);
-
-module.exports = addProduct;
+module.exports = router;

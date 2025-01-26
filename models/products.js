@@ -4,12 +4,17 @@ const Cart = require('./cart');
 
 const p = path.join(path.dirname(process.mainModule.filename), 'data', 'product.json');
 
-const fatchData = (cb) => {
+const fetchData = (cb) => {
     fs.readFile(p, (err, fileContent) => {
         if (err) {
-            cb([])
+            cb([]);
         } else {
-            cb(JSON.parse(fileContent));
+            try {
+                const data = JSON.parse(fileContent);
+                cb(data);
+            } catch (parseError) {
+                cb([]);
+            }
         };
     });
 }
@@ -22,47 +27,61 @@ module.exports = class Product {
         this.price = price;
         this.description = description;
     }
+
     save() {
-        fatchData((products) => {
-            if (this.id) {
-                const existingProductIndex = products.findIndex(prod => prod.id === this.id);
-                const updatedProducts = [...products];
-                updatedProducts[existingProductIndex] = this;
-                fs.writeFile(p, JSON.stringify(updatedProducts), (err) => {
-                    if (err) {
-                        console.log(err);
-                    };
-                });
-            } else {
-                this.id = Math.random().toString();
-                products.push(this);
-                fs.writeFile(p, JSON.stringify(products), (err) => {
-                    if (err) {
-                        console.log(err);
-                    };
-                });
-            }
-        })
+        return new Promise((resolve, reject) => {
+            fetchData((products) => {
+                if (this.id) {
+                    const existingProductIndex = products.findIndex(prod => prod.id === this.id);
+                    const updatedProducts = [...products];
+                    updatedProducts[existingProductIndex] = this;
+                    fs.writeFile(p, JSON.stringify(updatedProducts), (err) => {
+                        if (err) {
+                            console.error('Error saving product:', err);
+                            reject(err);
+                        } else {
+                            resolve();
+                        }
+                    });
+                } else {
+                    this.id = Math.random().toString();
+                    products.push(this);
+                    fs.writeFile(p, JSON.stringify(products), (err) => {
+                        if (err) {
+                            console.error('Error saving product:', err);
+                            reject(err);
+                        } else {
+                            resolve();
+                        }
+                    });
+                }
+            });
+        });
     }
-    static deleteById(id) {
-        fatchData((products) => {
+
+    static deleteById(id, cb) {
+        fetchData((products) => {
             const product = products.find(prod => prod.id === id);
             const updatedProducts = products.filter(prod => prod.id !== id);
             fs.writeFile(p, JSON.stringify(updatedProducts), (err) => {
-                if (!err) {
+                if (err) {
+                    console.error('Error deleting product:', err);
+                } else {
                     Cart.deleteProduct(id, product.price);
+                    if (cb) cb(updatedProducts);
                 }
-            })
-            cb(updatedProducts);
-        })
+            });
+        });
     }
-    static fatchAll(cb) {
-        fatchData(cb);
+
+    static fetchAll(cb) {
+        fetchData(cb);
     }
+
     static findById(id, cb) {
-        fatchData((products) => {
+        fetchData((products) => {
             const product = products.find(p => p.id === id);
             cb(product);
-        })
+        });
     }
 }

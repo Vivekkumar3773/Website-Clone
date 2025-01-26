@@ -4,4 +4,14 @@ block styles
 
 
 block contents 
-    h1 This is an Cart..
+    main
+        if products && products.length > 0 
+            ul 
+                each p in products 
+                    li 
+                        p #{p.productData.title} #{p.qty}
+                        form(action="/cart-delete-item" method="post")
+                            input(type="hidden" value=p.productData.id name="productId")
+                            button.btn(type="submit") Delete 
+        else 
+            h1 No Products

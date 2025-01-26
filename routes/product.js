@@ -1,19 +1,17 @@
 const express = require('express');
-
 const shopController = require('../controllers/shop');
 
-const product = express.Router();
+const router = express.Router(); // Updated variable name
 
-product.get('/', shopController.getProduct);
+// Define shop routes
+router.get('/', shopController.getProducts);
+router.get('/index', shopController.getIndex);
+router.get('/index/:productId', shopController.getProduct);
 
-product.get('/index', shopController.getIndex);
+router.get('/cart', shopController.getCart);
+router.post('/cart', shopController.postCart);
+router.post('/cart-delete-item', shopController.postCartDeleteProduct);
 
-product.get('/index/:productId', shopController.getProducts);
+router.get('/order', shopController.getOrder);
 
-product.get('/cart', shopController.getCart);
-
-product.post('/cart', shopController.postCart);
-
-product.get('/order', shopController.getOrder);
-
-module.exports = product;
+module.exports = router; // Export the router
